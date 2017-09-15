@@ -21,7 +21,10 @@ SECRET_KEY = get_secret()
 
 ALLOWED_HOSTS = ['*']
 
-INTERNAL_API_URL = 'http://awxweb:8052'
+INTERNAL_API_URL = '{}://{}:{}'.format(
+    os.getenv('INTERLAL_API_PROTO', 'http'),
+    os.getenv("INTERNAL_API_HOST", 'awxweb'),
+    os.getenv("INTERNAL_API_PORT", '8052'))
 
 AWX_TASK_ENV['HOME'] = '/var/lib/awx'
 
@@ -29,7 +32,7 @@ AWX_TASK_ENV['HOME'] = '/var/lib/awx'
 AWX_PROOT_ENABLED = False
 
 
-CLUSTER_HOST_ID = "awx"
+CLUSTER_HOST_ID = os.getenv('CLUSTER_HOST_ID', 'awx')
 SYSTEM_UUID = '00000000-0000-0000-0000-000000000000'
 CELERY_QUEUES += (Queue(CLUSTER_HOST_ID, Exchange(CLUSTER_HOST_ID), routing_key=CLUSTER_HOST_ID),)
 CELERY_ROUTES['awx.main.tasks.cluster_node_heartbeat'] = {'queue': CLUSTER_HOST_ID, 'routing_key': CLUSTER_HOST_ID}
@@ -40,15 +43,15 @@ CELERY_ROUTES['awx.main.tasks.purge_old_stdout_files'] = {'queue': CLUSTER_HOST_
 # EMAIL SETTINGS
 ###############################################################################
 
-SERVER_EMAIL = 'root@localhost'
-DEFAULT_FROM_EMAIL = 'webmaster@localhost'
-EMAIL_SUBJECT_PREFIX = '[AWX] '
+SERVER_EMAIL = os.getenv('SERVER_EMAIL', 'root@localhost')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'webmaster@localhost')
+EMAIL_SUBJECT_PREFIX = os.getenv('EMAIL_SUBJECT_PREFIX', '[AWX] ')
 
-EMAIL_HOST = 'localhost'
-EMAIL_PORT = 25
-EMAIL_HOST_USER = ''
-EMAIL_HOST_PASSWORD = ''
-EMAIL_USE_TLS = False
+EMAIL_HOST = os.getenv('EMAIL_HOST', 'localhost')
+EMAIL_PORT = os.getenv('EMAIL_PORT', 25)
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'false') == 'false'
 
 LOGGING['handlers']['console'] = {
     '()': 'logging.StreamHandler',
